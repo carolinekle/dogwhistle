@@ -10,10 +10,12 @@ def init_db():
     conn.execute("""
     CREATE TABLE IF NOT EXISTS results (
     id INTEGER PRIMARY KEY,
-    content TEXT,
+    content TEXT UNIQUE,
     dog_whistle TEXT,
     ingroup TEXT,
-    model TEXT,  -- 'openai' or 'llama_guard'
+    llama_response TEXT,
+    openai_response TEXT,
+    c_model_response TEXT,  
     flagged BOOLEAN,
     categories TEXT,
     category_scores TEXT,
