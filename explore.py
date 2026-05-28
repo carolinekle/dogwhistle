@@ -85,14 +85,22 @@ def write_row(conn: sqlite3.Connection, row: dict):
     """, row)
     conn.commit()
 
+def already_processed(conn, row_id):
+    cur = conn.execute("SELECT 1 FROM results WHERE id = ?", (row_id,))
+    return cur.fetchone() is not None
+
 def prompter(conn):
     dataset = load_dataset("SALT-NLP/silent_signals", split="train[:10]")
-    for row in dataset:
+    for idx, row in enumerate(dataset):
+        if already_processed(conn, idx):
+            print(f"Skipping row {idx}, already processed")
+            continue
 
         o_response = call_OAI(row["content"])
         l_response = call_llama(row["content"])
 
         write_row(conn,{
+            "id": idx,
             "content": row["content"],
             "dog_whistle": row["dog_whistle"],
             "ingroup": row["ingroup"],
