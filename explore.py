@@ -1,6 +1,5 @@
 from datasets import load_dataset_builder
 from datasets import load_dataset
-import sys
 from openai import OpenAI
 from huggingface_hub import InferenceClient
 import os
@@ -19,15 +18,24 @@ Hclient = InferenceClient(
     api_key=os.environ["HF_TOKEN"],
 )
 
-def call_OAI(content):
-    response = client.moderations.create(
-    model="omni-moderation-latest",
-    input=content
+def call_OAI(content, retries=3):
+    for attempt in range(retries):
+        try:
+            response = client.moderations.create(
+                model="omni-moderation-latest",
+                input=content
+            )
+            return response
+        except Exception as e:
+            if attempt < retries - 1:
+                delay = 5 * (2 ** attempt)
+                print(f"OAI error, retrying in {delay}s ({attempt + 1}/{retries}): {e}")
+                time.sleep(delay)
+            else:
+                print(f"OAI failed after {retries} attempts: {e}")
+                return None
 
-    )
-    return response
-
-def call_llama(content, retries=3):
+def call_llama(content, retries=5):
     prompt = f"""[INST] Task: Check if there is unsafe content in the user message.
 
     <BEGIN USER MESSAGE>
@@ -42,20 +50,19 @@ def call_llama(content, retries=3):
                 model="meta-llama/Llama-Guard-3-8B:featherless-ai",
                 messages=[{"role": "user", "content": prompt}],
             )
+            time.sleep(1.5)  
             return completion.choices[0].message.content
         except Exception as e:
+            if "402" in str(e):
+                print(f"Llama: HuggingFace credits exhausted — skipping Llama for this run")
+                return None
             if attempt < retries - 1:
-                print(f"Llama timeout, retrying ({attempt + 1}/{retries})...")
-                time.sleep(5)
+                delay = 5 * (2 ** attempt)  
+                print(f"Llama error, retrying in {delay}s ({attempt + 1}/{retries}): {e}")
+                time.sleep(delay)
             else:
                 print(f"Llama failed after {retries} attempts: {e}")
                 return None
-
-    completion = Hclient.chat.completions.create(
-        model="meta-llama/Llama-Guard-3-8B:featherless-ai",
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return completion.choices[0].message.content,
 
 def write_row(conn: sqlite3.Connection, row: dict):
     conn.execute("""
@@ -65,7 +72,7 @@ def write_row(conn: sqlite3.Connection, row: dict):
             ingroup,
             llama_response,
             openai_response,
-            c_model_response,   
+            c_model_response,
             flagged,
             categories,
             category_scores,
@@ -76,7 +83,7 @@ def write_row(conn: sqlite3.Connection, row: dict):
             :ingroup,
             :llama_response,
             :openai_response,
-            :c_model_response,  
+            :c_model_response,
             :flagged,
             :categories,
             :category_scores,
@@ -85,22 +92,30 @@ def write_row(conn: sqlite3.Connection, row: dict):
     """, row)
     conn.commit()
 
-def already_processed(conn, row_id):
-    cur = conn.execute("SELECT 1 FROM results WHERE id = ?", (row_id,))
+def already_processed(conn, content):
+    cur = conn.execute("SELECT 1 FROM results WHERE content = ?", (content,))
     return cur.fetchone() is not None
 
 def prompter(conn):
     dataset = load_dataset("SALT-NLP/silent_signals", split="train[:10]")
+    total = len(dataset)
+
     for idx, row in enumerate(dataset):
-        if already_processed(conn, idx):
-            print(f"Skipping row {idx}, already processed")
+        if already_processed(conn, row["content"]):
+            if idx % 500 == 0:
+                print(f"[{idx}/{total}] skipping (already done)")
             continue
 
         o_response = call_OAI(row["content"])
+        time.sleep(0.1)
+
+        if o_response is None:
+            print(f"[{idx}/{total}] OAI failed — skipping row, will retry on next run")
+            continue
+
         l_response = call_llama(row["content"])
 
-        write_row(conn,{
-            "id": idx,
+        write_row(conn, {
             "content": row["content"],
             "dog_whistle": row["dog_whistle"],
             "ingroup": row["ingroup"],
@@ -113,8 +128,11 @@ def prompter(conn):
             "source": row["source"]
         })
 
+        if idx % 50 == 0:
+            print(f"[{idx}/{total}] done — flagged: {o_response.results[0].flagged}, llama: {str(l_response)[:40]}")
+
 
 if __name__ == "__main__":
-    init_db()  
+    init_db()
     conn = get_conn()
     prompter(conn)
