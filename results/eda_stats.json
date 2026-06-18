@@ -1,0 +1,100 @@
+{
+  "total_rows": 16199,
+  "split_sizes": {
+    "train": 11339,
+    "val": 2430,
+    "test": 2430
+  },
+  "class_distribution": {
+    "racist": 5097,
+    "white supremacist": 2229,
+    "antisemitic": 2154,
+    "transphobic": 1806,
+    "anti-liberal": 1252,
+    "Islamophobic": 1072,
+    "conservative": 758,
+    "anti-Latino": 715,
+    "homophobic": 271,
+    "climate change denier": 208,
+    "anti-vax": 140,
+    "anti-LGBTQ": 130,
+    "anti-Asian": 117,
+    "liberal": 77,
+    "xenophobic": 75,
+    "anti-GMO": 70,
+    "other": 28
+  },
+  "train_class_distribution": {
+    "racist": 3568,
+    "white supremacist": 1560,
+    "antisemitic": 1508,
+    "transphobic": 1264,
+    "anti-liberal": 876,
+    "Islamophobic": 750,
+    "conservative": 531,
+    "anti-Latino": 500,
+    "homophobic": 190,
+    "climate change denier": 146,
+    "anti-vax": 98,
+    "anti-LGBTQ": 91,
+    "anti-Asian": 82,
+    "liberal": 54,
+    "xenophobic": 52,
+    "anti-GMO": 49,
+    "other": 20
+  },
+  "approx_word_lengths": {
+    "mean": 37.8,
+    "median": 32.0,
+    "p95": 73.0,
+    "max": 3152
+  },
+  "source_breakdown": {
+    "Pushift 2005-2022": 9706,
+    "PRAW API": 3195,
+    "Stanford Congressional Record": 3048,
+    "@unitedstatesproject": 250
+  },
+  "baseline_stats": {
+    "lg3_safe_rate_overall": 0.8234,
+    "oai_flagged_rate_overall": 0.4649,
+    "lg3_safe_by_ingroup": {
+      "Islamophobic": 0.6521,
+      "anti-Asian": 0.5385,
+      "anti-GMO": 0.9857,
+      "anti-LGBTQ": 0.6615,
+      "anti-Latino": 0.8853,
+      "anti-liberal": 0.8738,
+      "anti-vax": 0.9286,
+      "antisemitic": 0.7149,
+      "climate change denier": 0.9615,
+      "conservative": 0.9736,
+      "homophobic": 0.8856,
+      "liberal": 1.0,
+      "other": 0.8571,
+      "racist": 0.8611,
+      "transphobic": 0.8223,
+      "white supremacist": 0.8134,
+      "xenophobic": 0.7733
+    },
+    "oai_flagged_by_ingroup": {
+      "Islamophobic": 0.6614,
+      "anti-Asian": 0.6923,
+      "anti-GMO": 0.1,
+      "anti-LGBTQ": 0.6692,
+      "anti-Latino": 0.586,
+      "anti-liberal": 0.595,
+      "anti-vax": 0.2143,
+      "antisemitic": 0.5599,
+      "climate change denier": 0.3269,
+      "conservative": 0.1003,
+      "homophobic": 0.3616,
+      "liberal": 0.4935,
+      "other": 0.2857,
+      "racist": 0.339,
+      "transphobic": 0.6213,
+      "white supremacist": 0.4733,
+      "xenophobic": 0.72
+    }
+  }
+}

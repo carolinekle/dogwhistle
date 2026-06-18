@@ -1,7 +1,7 @@
 from datasets import load_dataset_builder
 from datasets import load_dataset
 from openai import OpenAI
-from huggingface_hub import InferenceClient
+from tqdm import tqdm
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -14,9 +14,12 @@ ds_builder = load_dataset_builder("SALT-NLP/silent_signals")
 
 client = OpenAI(max_retries=5)
 
-Hclient = InferenceClient(
-    api_key=os.environ["HF_TOKEN"],
+llama_client = OpenAI(
+    base_url="https://api.featherless.ai/v1",
+    api_key=os.environ["FEATHERLESS_API_KEY"],
+    max_retries=0,  # retries handled manually below
 )
+
 
 def call_OAI(content, retries=3):
     for attempt in range(retries):
@@ -35,34 +38,25 @@ def call_OAI(content, retries=3):
                 print(f"OAI failed after {retries} attempts: {e}")
                 return None
 
+
 def call_llama(content, retries=5):
-    prompt = f"""[INST] Task: Check if there is unsafe content in the user message.
-
-    <BEGIN USER MESSAGE>
-    {content}
-    <END USER MESSAGE>
-
-    Provide your safety assessment: [/INST]"""
-
     for attempt in range(retries):
         try:
-            completion = Hclient.chat.completions.create(
-                model="meta-llama/Llama-Guard-3-8B:featherless-ai",
-                messages=[{"role": "user", "content": prompt}],
+            completion = llama_client.chat.completions.create(
+                model="meta-llama/Llama-Guard-3-8B",
+                messages=[{"role": "user", "content": content}],
+                max_tokens=20,
             )
-            time.sleep(1.5)  
             return completion.choices[0].message.content
         except Exception as e:
-            if "402" in str(e):
-                print(f"Llama: HuggingFace credits exhausted — skipping Llama for this run")
-                return None
             if attempt < retries - 1:
-                delay = 5 * (2 ** attempt)  
+                delay = 5 * (2 ** attempt)
                 print(f"Llama error, retrying in {delay}s ({attempt + 1}/{retries}): {e}")
                 time.sleep(delay)
             else:
                 print(f"Llama failed after {retries} attempts: {e}")
                 return None
+
 
 def write_row(conn: sqlite3.Connection, row: dict):
     conn.execute("""
@@ -92,28 +86,31 @@ def write_row(conn: sqlite3.Connection, row: dict):
     """, row)
     conn.commit()
 
+
 def already_processed(conn, content):
     cur = conn.execute("SELECT 1 FROM results WHERE content = ?", (content,))
     return cur.fetchone() is not None
 
-def prompter(conn):
-    dataset = load_dataset("SALT-NLP/silent_signals", split="train[:10]")
-    total = len(dataset)
 
-    for idx, row in enumerate(dataset):
+def prompter(conn):
+    dataset = load_dataset("SALT-NLP/silent_signals", split="train")
+
+    for row in tqdm(dataset, desc="Processing"):
         if already_processed(conn, row["content"]):
-            if idx % 500 == 0:
-                print(f"[{idx}/{total}] skipping (already done)")
             continue
 
         o_response = call_OAI(row["content"])
         time.sleep(0.1)
 
         if o_response is None:
-            print(f"[{idx}/{total}] OAI failed — skipping row, will retry on next run")
+            tqdm.write(f"OAI failed — skipping: {row['content'][:40]}")
             continue
 
         l_response = call_llama(row["content"])
+
+        if l_response is None:
+            tqdm.write(f"Llama failed — skipping: {row['content'][:40]}")
+            continue
 
         write_row(conn, {
             "content": row["content"],
@@ -127,9 +124,6 @@ def prompter(conn):
             "category_scores": str(dict(o_response.results[0].category_scores)),
             "source": row["source"]
         })
-
-        if idx % 50 == 0:
-            print(f"[{idx}/{total}] done — flagged: {o_response.results[0].flagged}, llama: {str(l_response)[:40]}")
 
 
 if __name__ == "__main__":

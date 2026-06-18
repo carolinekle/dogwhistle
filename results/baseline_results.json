@@ -1,0 +1,95 @@
+{
+  "test_size": 2430,
+  "overall_recall": {
+    "lg3": 0.1802,
+    "oai": 0.4564
+  },
+  "per_ingroup_recall": {
+    "lg3": {
+      "anti-LGBTQ": 0.4211,
+      "Islamophobic": 0.3727,
+      "antisemitic": 0.2972,
+      "anti-Asian": 0.2941,
+      "xenophobic": 0.2727,
+      "white supremacist": 0.1976,
+      "racist": 0.1569,
+      "transphobic": 0.1513,
+      "anti-liberal": 0.1223,
+      "homophobic": 0.122,
+      "anti-vax": 0.0952,
+      "anti-Latino": 0.0648,
+      "conservative": 0.0175,
+      "anti-GMO": 0.0,
+      "liberal": 0.0,
+      "other": 0.0,
+      "climate change denier": 0.0
+    },
+    "oai": {
+      "xenophobic": 0.8182,
+      "anti-LGBTQ": 0.7895,
+      "anti-Asian": 0.7647,
+      "Islamophobic": 0.6273,
+      "transphobic": 0.5978,
+      "anti-Latino": 0.5833,
+      "antisemitic": 0.5635,
+      "anti-liberal": 0.5585,
+      "white supremacist": 0.479,
+      "liberal": 0.4545,
+      "racist": 0.3333,
+      "homophobic": 0.3171,
+      "climate change denier": 0.2903,
+      "other": 0.25,
+      "anti-vax": 0.2381,
+      "conservative": 0.0965,
+      "anti-GMO": 0.0
+    }
+  },
+  "divergence": {
+    "both_flagged": 385,
+    "oai_only": 724,
+    "lg3_only": 53,
+    "neither_flagged": 1268
+  },
+  "lg3_category_breakdown": {
+    "S10": {
+      "count": 363,
+      "pct": 0.8288
+    },
+    "S1": {
+      "count": 24,
+      "pct": 0.0548
+    },
+    "S5": {
+      "count": 16,
+      "pct": 0.0365
+    },
+    "S4": {
+      "count": 11,
+      "pct": 0.0251
+    },
+    "S13": {
+      "count": 11,
+      "pct": 0.0251
+    },
+    "S2": {
+      "count": 6,
+      "pct": 0.0137
+    },
+    "S6": {
+      "count": 2,
+      "pct": 0.0046
+    },
+    "S12": {
+      "count": 2,
+      "pct": 0.0046
+    },
+    "S11": {
+      "count": 2,
+      "pct": 0.0046
+    },
+    "S7": {
+      "count": 1,
+      "pct": 0.0023
+    }
+  }
+}
