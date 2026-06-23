@@ -1,0 +1,108 @@
+{
+  "overall_macro_f1": 0.9355,
+  "source_breakdown": {
+    "Pushift 2005-2022": {
+      "n": 1471,
+      "macro_f1": 0.9287
+    },
+    "PRAW API": {
+      "n": 461,
+      "macro_f1": 0.8425
+    },
+    "Stanford Congressional Record": {
+      "n": 472,
+      "macro_f1": 0.8879
+    },
+    "@unitedstatesproject": {
+      "n": 26,
+      "macro_f1": 0.7236
+    }
+  },
+  "per_ingroup_comparison": {
+    "Islamophobic": {
+      "lg3_recall": 0.3727,
+      "oai_recall": 0.6273,
+      "roberta_f1": 0.9448
+    },
+    "anti-Asian": {
+      "lg3_recall": 0.2941,
+      "oai_recall": 0.7647,
+      "roberta_f1": 0.9189
+    },
+    "anti-GMO": {
+      "lg3_recall": 0.0,
+      "oai_recall": 0.0,
+      "roberta_f1": 0.9565
+    },
+    "anti-LGBTQ": {
+      "lg3_recall": 0.4211,
+      "oai_recall": 0.7895,
+      "roberta_f1": 0.9744
+    },
+    "anti-Latino": {
+      "lg3_recall": 0.0648,
+      "oai_recall": 0.5833,
+      "roberta_f1": 0.9422
+    },
+    "anti-liberal": {
+      "lg3_recall": 0.1223,
+      "oai_recall": 0.5585,
+      "roberta_f1": 0.9708
+    },
+    "anti-vax": {
+      "lg3_recall": 0.0952,
+      "oai_recall": 0.2381,
+      "roberta_f1": 0.9767
+    },
+    "antisemitic": {
+      "lg3_recall": 0.2972,
+      "oai_recall": 0.5635,
+      "roberta_f1": 0.8902
+    },
+    "climate change denier": {
+      "lg3_recall": 0.0,
+      "oai_recall": 0.2903,
+      "roberta_f1": 0.9688
+    },
+    "conservative": {
+      "lg3_recall": 0.0175,
+      "oai_recall": 0.0965,
+      "roberta_f1": 0.97
+    },
+    "homophobic": {
+      "lg3_recall": 0.122,
+      "oai_recall": 0.3171,
+      "roberta_f1": 0.875
+    },
+    "liberal": {
+      "lg3_recall": 0.0,
+      "oai_recall": 0.4545,
+      "roberta_f1": 0.88
+    },
+    "other": {
+      "lg3_recall": 0.0,
+      "oai_recall": 0.25,
+      "roberta_f1": 1.0
+    },
+    "racist": {
+      "lg3_recall": 0.1569,
+      "oai_recall": 0.3333,
+      "roberta_f1": 0.9324
+    },
+    "transphobic": {
+      "lg3_recall": 0.1513,
+      "oai_recall": 0.5978,
+      "roberta_f1": 0.9591
+    },
+    "white supremacist": {
+      "lg3_recall": 0.1976,
+      "oai_recall": 0.479,
+      "roberta_f1": 0.8738
+    },
+    "xenophobic": {
+      "lg3_recall": 0.2727,
+      "oai_recall": 0.8182,
+      "roberta_f1": 0.8696
+    }
+  }
+}
