@@ -1,2 +1,3 @@
 .env
-data/whistle_results.dbcheckpoints/
+data/whistle_results.db
+checkpoints/best_model.pt
